@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Row, Col, Form, Button } from 'react-bootstrap'
 import FormField from '../components/inputField'
-import Tools from '../components/optionFields'
+import Options from '../components/optionFields'
 import axios from 'axios'
 
 function FormContainer() {
@@ -48,11 +49,14 @@ function FormContainer() {
       },
       data
     })
-      .then(res => {
+      .then((res) => {
         console.log(res.data)
+        setFields([])
+        notification('Form has been submitted','success')
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error)
+        notification('Unable to submit the form, Try again later.', 'error')
       })
   }
 
@@ -61,16 +65,19 @@ function FormContainer() {
       <div className="container border-g">
         <Row>
           <Col md={3}>
-            <Tools add={add} track={trackPos} stop={stop} reset={reset} x={xAxis} y={yAxis} />
+            <Options add={add} track={trackPos} stop={stop} reset={reset} x={xAxis} y={yAxis} />
           </Col>
           <Col md={9}>
             <div className={`FormContainer tools ${xAxis > 300 ? 'background-g' : ''}`}>
-              <h4>Form</h4>
+              <div className="d-flex justify-content-between">
+                <h4>Form</h4>
+                <h4><Link to="/saved">Saved</Link></h4>
+              </div>
               <Form id="testform" onSubmit={(e) => submitHandler(e)}>
                 {fields && fields.map((value, index) => {
                   return <FormField key={index} id={value.id} name={value.name} text={value.text} type={value.type} placeholder={value.placeholder} />
                 })}
-                {fields.length > 0 ? <Button className='mb-3' onClick={(e) => submitHandler(e)}>Submit</Button> : ''}
+                {fields.length > 0 ? <Button className='mb-3' onClick={(e) => submitHandler(e)}>Save</Button> : ''}
               </Form>
             </div>
           </Col>

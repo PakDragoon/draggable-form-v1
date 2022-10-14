@@ -11,6 +11,7 @@ import { LoadingButton } from '@mui/lab';
 import Iconify from '../../../components/Iconify';
 import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
 import axios from 'axios';
+import { notification } from '../../../helpers/data';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +52,10 @@ export default function LoginForm() {
           localStorage.setItem('token', res.data.token)
           navigate('/form', { replace: true });
       })
-      .catch((error) => console.log(error)) 
+      .catch((error) => {
+        console.log(error)
+        notification('Incorrect email or password', 'error')
+      }) 
   };
 
   return (

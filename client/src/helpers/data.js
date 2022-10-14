@@ -1,3 +1,17 @@
+import { toast } from "react-toastify"
+
+const config = {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+}
+
+export const notification = (message, type) => toast[type](message, config)
+
 export const options = [
     { label: 'Text', value: 'text' }, 
     { label: 'Email', value: 'email'},
@@ -10,3 +24,4 @@ export const options = [
     { label: 'Url', value: 'url'},
     { label: 'Range', value: 'range'}
 ]
+

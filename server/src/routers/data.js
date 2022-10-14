@@ -18,6 +18,58 @@ router.post('/create', auth, async(req, res) => {
     res.status(400).send({error: error.message})
 })
 
+//Get All Data
+router.get('/getAll', auth, async (req, res) => {
+  const match = {}
+  const sort = {}
+  if (req.query.completed) {
+    match.completed = req.query.completed === "true"
+  }
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(":")
+    sort[parts[0]] = parts[1] === "desc" ? -1 : 1
+  }
+  try {
+    await req.user.populate({
+      path: "datas",
+      match,
+      options: {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+        sort,
+      },
+    })
+    res.send(req.user.datas)
+  } catch (error) {
+    res.status(404).send(error)
+  }
+})
+
+//Get Data By Id
+router.get('/get/:id', auth, async (req, res) => {
+  const _id = req.params.id
+  try {
+    const data = await Data.findOne({ owner: req.user._id, _id })
+    if (!data) {
+      return res.status(404).send()
+    }
+    res.status(201).send(data)
+  } catch (error) {
+    res.status(500).send()
+  }
+})
+
+//Delete Data
+// router.delete('/delete/:id', auth, async (req, res) => {
+//     try {
+//         const deleteData = await Data.findByIdAndDelete(req.params.id)
+//         if (!deleteData) return res.status(404).send()
+//         res.status(200).send('deleted')
+//     } catch (error) {
+//         res.status(400).send(error)
+//     }
+// })
+
 //Multer Configs
 // const upload = multer({
 //     limits: { fileSize: 10485760 },
@@ -61,44 +113,6 @@ router.post('/create', auth, async(req, res) => {
 //         res.send(formatedImages)
 //     } catch (error) {
 //         res.status(404).send(error)        
-//     }
-// })
-
-//Get Data
-// router.get('/getAll', auth, async (req, res) => {
-//   const match = {}
-//   const sort = {}
-//   if (req.query.completed) {
-//     match.completed = req.query.completed === "true"
-//   }
-//   if (req.query.sortBy) {
-//     const parts = req.query.sortBy.split(":")
-//     sort[parts[0]] = parts[1] === "desc" ? -1 : 1
-//   }
-//   try {
-//     await req.user.populate({
-//       path: "datas",
-//       match,
-//       options: {
-//         limit: parseInt(req.query.limit),
-//         skip: parseInt(req.query.skip),
-//         sort,
-//       },
-//     })
-//     res.send(req.user.datas)
-//   } catch (error) {
-//     res.status(404).send(error)
-//   }
-// })
-
-//Delete Data
-// router.delete('/delete/:id', auth, async (req, res) => {
-//     try {
-//         const deleteData = await Data.findByIdAndDelete(req.params.id)
-//         if (!deleteData) return res.status(404).send()
-//         res.status(200).send('deleted')
-//     } catch (error) {
-//         res.status(400).send(error)
 //     }
 // })
 
