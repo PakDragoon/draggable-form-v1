@@ -1,0 +1,51 @@
+.FormContainer {
+  overflow-y: auto;
+  height: 95vh;
+}
+.ToolsContainer {
+  border-right: 1px solid black;
+  height: 95vh;
+}
+.tools {
+  padding: 1rem;
+}
+.tools-saved {
+  padding: 0.25rem;
+}
+.tools-icons {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.drag {
+  cursor: grab;
+}
+.drag:active {
+  cursor: grabbing;
+}
+.saved-forms a {
+  text-decoration: none;
+}
+.saved-forms a:hover {
+  background-color: lightgreen;
+  color: white;
+}
+.saved-forms a:active {
+  background-color: lightgreen;
+  color: white;
+}
+.saved-forms a:focus {
+  background-color: lightgreen;
+  color: white;
+}
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.border-g {
+  border: 1px solid green;
+}
+.background-g {
+  border: 3rem solid lightgreen;
+}

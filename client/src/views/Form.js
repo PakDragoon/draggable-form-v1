@@ -3,29 +3,57 @@ import { Link } from 'react-router-dom'
 import { Row, Col, Form, Button } from 'react-bootstrap'
 import FormField from '../components/inputField'
 import Options from '../components/optionFields'
+import { notification } from '../helpers/data'
 import axios from 'axios'
+import { Box, TextField, Modal, Button as MuiButton } from '@mui/material';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
 
 function FormContainer() {
   const token = localStorage.getItem('token')
   const [fields, setFields] = useState([])
+  const [id, setId] = useState('')
+  const [label, setLabel] = useState('')
+  const [placeholder, setPlaceholder] = useState('')
+  const [type, setType] = useState('')
   const [count, setCount] = useState(0)
   const [xAxis, setXAxis] = useState(0);
   const [yAxis, setYAxis] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const trackPos = (data) => {
       setXAxis(data.x);
       setYAxis(data.y);
   };
 
+  const handleSubmit = () => {
+    add(id, label, type, placeholder)
+    setOpen(false)
+  }
+
   const stop = (type) => {
-    if(xAxis > 300) add(type)
+    setType(type)
+    if(xAxis > 300){ 
+      setOpen(true);
+      // add(type)
+    }
     setXAxis(0)
     setYAxis(0)
   };
 
-  const add = (type) => {
-    setCount(count + 1)
-    setFields([...fields, {id: count, text: type, type: type, placeholder: `Enter ${type}`, name: count}])
+  const add = (id, label, type, placeholder) => {
+    setCount(count + 1) 
+    setFields([...fields, {id, text: label, type, placeholder, name: count}])
+    // setFields([...fields, {id: count, text: type, type: type, placeholder: `Enter ${type}`, name: count}])
   }
 
   const reset = () => {
@@ -82,6 +110,28 @@ function FormContainer() {
             </div>
           </Col>
         </Row>
+        {/* Pop up */}
+        <Modal
+          open={open}
+          onClose={() => setOpen(false)}
+        >
+          <Box sx={style}>
+            <Row>
+              <Col md={12}>
+                <TextField className='w-100' label="Id" variant="standard" onChange={(e) => setId(e.target.value)} />
+              </Col>
+              <Col md={12}>
+                <TextField className='w-100' label="Label" variant="standard" onChange={(e) => setLabel(e.target.value)} />
+              </Col>
+              <Col md={12}>
+                <TextField className='w-100' label="Placeholder" variant="standard" onChange={(e) => setPlaceholder(e.target.value)} />
+              </Col>
+              <Col md={12} className='mt-4'>
+                <MuiButton onClick={handleSubmit} variant="outlined">Done</MuiButton>
+              </Col>
+            </Row>
+          </Box>
+        </Modal>
       </div>
     </div>
   );
