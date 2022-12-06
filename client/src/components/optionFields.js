@@ -38,7 +38,7 @@ function Tools({ reset, track, stop, x, y }) {
         })}
         <div className="tools">
             <Draggable onDrag={(e, data) => track(data)} position={{x: 0, y: 0}}>
-                <div className='drag border-g'>I am at: {x}, {y}</div>
+                <div className='drag border-g'>[Dev only] I am at: {x}, {y}</div>
             </Draggable>
         </div>
         <div className="center mb-3">
