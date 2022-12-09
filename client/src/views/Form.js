@@ -33,6 +33,7 @@ function FormContainer() {
   const [open, setOpen] = useState(false)
   const [open1, setOpen1] = useState(false)
   const [clicked, setClicked] = useState(false)
+  const [converter, setConverter] = useState("html")
 
   const trackPos = (data) => {
     setXAxis(data.x)
@@ -158,7 +159,20 @@ function FormContainer() {
         <Modal open={open1} onClose={() => setOpen1(false)}>
           <Box sx={style}>
             <Row>
-              <Col md={12}>{code}</Col>
+              <Col md={12} className="mt-4" style={{ display: "flex", justifyContent: "center" }}>
+                <MuiButton onClick={() => setConverter("html")} variant="outlined">
+                  HTML
+                </MuiButton>
+                <MuiButton style={{ marginLeft: "1rem" }} onClick={() => setConverter("react")} variant="outlined">
+                  React
+                </MuiButton>
+                <MuiButton style={{ marginLeft: "1rem" }} onClick={() => setConverter("reactmui")} variant="outlined">
+                  {`React (MUI)`}
+                </MuiButton>
+              </Col>
+              <Col md={12} className="mt-4">
+                {converter === "react" ? "React generated Code" : converter === "reactmui" ? "MUI generated Code" : code}
+              </Col>
               <Col md={12} className="mt-4">
                 <MuiButton onClick={() => setOpen1(false)} variant="outlined" color="secondary">
                   Close

@@ -3,30 +3,66 @@ import { Link } from "react-router-dom"
 import { Row, Col, Form, Button } from "react-bootstrap"
 import FormField from "../components/inputField"
 import Options from "../components/optionFields"
-import axios from "axios"
 import { notification } from "../helpers/data"
+import axios from "axios"
+import { Box, TextField, Modal, Button as MuiButton } from "@mui/material"
+import { ContentPaste, AssignmentTurnedIn } from "@mui/icons-material"
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 600,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+}
 
 function FormContainer() {
   const token = localStorage.getItem("token")
+  const [code, setCode] = useState("")
   const [fields, setFields] = useState([])
+  const [id, setId] = useState("")
+  const [label, setLabel] = useState("")
+  const [placeholder, setPlaceholder] = useState("")
+  const [type, setType] = useState("")
   const [count, setCount] = useState(0)
   const [xAxis, setXAxis] = useState(0)
   const [yAxis, setYAxis] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [open1, setOpen1] = useState(false)
+  const [clicked, setClicked] = useState(false)
 
   const trackPos = (data) => {
     setXAxis(data.x)
     setYAxis(data.y)
   }
 
+  const handleSubmit = () => {
+    add(id, label, type, placeholder)
+    setOpen(false)
+  }
+
+  const generateHtml = () => {
+    setOpen1(true)
+  }
+
   const stop = (type) => {
-    if (xAxis > 300) add(type)
+    setType(type)
+    if (xAxis > 300) {
+      setOpen(true)
+    }
     setXAxis(0)
     setYAxis(0)
   }
 
-  const add = (type) => {
+  const add = (id, label, type, placeholder) => {
     setCount(count + 1)
-    setFields([...fields, { id: count, text: type, type: type, placeholder: `Enter ${type}`, name: count }])
+    setFields([...fields, { id, text: label, type, placeholder, name: count }])
+    const n = `<label for="${count}">${label}</label>
+    <input type="${type}" id="${id}" placeholder="${placeholder}" name="${count}" />`
+    setCode(`${code}\n${n}`)
   }
 
   const reset = () => {
@@ -44,7 +80,7 @@ function FormContainer() {
     }
     axios({
       method: "POST",
-      url: `https://draggable-form-v1.herokuapp.com/data/create`,
+      url: `http://localhost:8000/data/create`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -53,11 +89,11 @@ function FormContainer() {
       .then((res) => {
         console.log(res.data)
         setFields([])
-        notification('Form has been submitted','success')
+        notification("Form has been submitted", "success")
       })
       .catch((error) => {
         console.log(error)
-        notification('Unable to submit the form, Try again later.', 'error')
+        notification("Unable to submit the form, Try again later.", "error")
       })
   }
 
@@ -82,9 +118,14 @@ function FormContainer() {
                     return <FormField key={index} id={value.id} name={value.name} text={value.text} type={value.type} placeholder={value.placeholder} />
                   })}
                 {fields.length > 0 ? (
-                  <Button className="mb-3" onClick={(e) => submitHandler(e)}>
-                    Save
-                  </Button>
+                  <>
+                    <Button className="mb-3" onClick={(e) => submitHandler(e)}>
+                      Save
+                    </Button>
+                    <Button variant="success" className="mb-3" style={{ marginLeft: "1rem" }} onClick={generateHtml}>
+                      Generate Html
+                    </Button>
+                  </>
                 ) : (
                   ""
                 )}
@@ -92,6 +133,55 @@ function FormContainer() {
             </div>
           </Col>
         </Row>
+        {/* Field's Attributes */}
+        <Modal open={open} onClose={() => setOpen(false)}>
+          <Box sx={style}>
+            <Row>
+              <Col md={12}>
+                <TextField className="w-100" label="Id" variant="standard" onChange={(e) => setId(e.target.value)} />
+              </Col>
+              <Col md={12}>
+                <TextField className="w-100" label="Label" variant="standard" onChange={(e) => setLabel(e.target.value)} />
+              </Col>
+              <Col md={12}>
+                <TextField className="w-100" label="Placeholder" variant="standard" onChange={(e) => setPlaceholder(e.target.value)} />
+              </Col>
+              <Col md={12} className="mt-4">
+                <MuiButton onClick={handleSubmit} variant="outlined">
+                  Done
+                </MuiButton>
+              </Col>
+            </Row>
+          </Box>
+        </Modal>
+        {/* Generated Code */}
+        <Modal open={open1} onClose={() => setOpen1(false)}>
+          <Box sx={style}>
+            <Row>
+              <Col md={12}>{code}</Col>
+              <Col md={12} className="mt-4">
+                <MuiButton onClick={() => setOpen1(false)} variant="outlined" color="secondary">
+                  Close
+                </MuiButton>
+                <MuiButton
+                  style={{ marginLeft: "0.5rem" }}
+                  onClick={() => {
+                    navigator.clipboard.writeText(code)
+                    setClicked(true)
+                    setTimeout(() => {
+                      setClicked(false)
+                    }, 5000)
+                  }}
+                  color={clicked ? "success" : "warning"}
+                  variant="outlined"
+                  startIcon={clicked ? <AssignmentTurnedIn /> : <ContentPaste />}
+                >
+                  {clicked ? "Copied to clipboard" : "Copy to clipboard"}
+                </MuiButton>
+              </Col>
+            </Row>
+          </Box>
+        </Modal>
       </div>
     </div>
   )

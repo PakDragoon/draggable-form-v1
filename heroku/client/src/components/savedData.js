@@ -17,7 +17,7 @@ function Tools({ getData }) {
   const getAll = () => {
     axios({
       method: "GET",
-      url: `https://draggable-form-v1.herokuapp.com/data/getAll`,
+      url: `http://localhost:8000/data/getAll`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -34,7 +34,7 @@ function Tools({ getData }) {
   const logout = () => {
     axios({
       method: "POST",
-      url: `https://draggable-form-v1.herokuapp.com/user/logoutAll`,
+      url: `http://localhost:8000/user/logoutAll`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
